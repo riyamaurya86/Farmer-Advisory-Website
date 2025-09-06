@@ -8,7 +8,8 @@
 
 .main-content {
   flex: 1;
-  padding-top: 80px; /* Account for fixed navbar */
+  padding-top: 100px; /* Account for fixed navbar with more spacing */
+  padding-bottom: 2rem; /* Add bottom padding */
 }
 
 /* Navbar Styles */
@@ -311,35 +312,93 @@
 }
 
 /* Records Component Styles */
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 0;
+  width: 100%;
+}
+
+.records-header .records-title {
+  flex: 1;
+}
+
+.records-header .add-record-btn {
+  margin-left: auto;
+}
+
+.records-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.records-title h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.records-title i {
+  color: #4CAF50;
+  font-size: 1.5rem;
+}
+
+.db-status-icon {
+  margin-left: 1rem;
+  font-size: 1.2rem;
+}
+
+.add-record-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
 .records-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
 .record-card {
   background: #f8f9fa;
   border-radius: 15px;
-  padding: 1.5rem;
+  padding: 2rem;
   border-left: 4px solid #4CAF50;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .record-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .record-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
 }
 
 .record-header h4 {
   margin: 0;
   color: #4CAF50;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
 .btn-delete {
@@ -347,38 +406,129 @@
   border: none;
   color: #dc3545;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border-radius: 50%;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
 }
 
 .btn-delete:hover {
   background: rgba(220, 53, 69, 0.1);
+  transform: scale(1.1);
+}
+
+.record-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .record-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
   color: #666;
+  font-size: 1rem;
+}
+
+.record-item i {
+  color: #4CAF50;
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
 }
 
 .record-notes {
   margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
+  padding: 1rem;
+  background: rgba(76, 175, 80, 0.05);
+  border-radius: 10px;
+  border-left: 3px solid #4CAF50;
 }
 
 .record-notes i {
   color: #4CAF50;
-  margin-right: 0.5rem;
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.record-notes p {
+  margin: 0;
+  color: #555;
+  line-height: 1.5;
 }
 
 .record-meta {
-  margin-top: 1rem;
-  padding-top: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
   border-top: 1px solid #e9ecef;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Form spacing improvements */
+.records-form {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 15px;
+  margin: 1.5rem 0;
+}
+
+.records-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.records-form .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.records-form .form-input {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.records-form .form-input:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e9ecef;
+}
+
+.form-actions .btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 10px;
+}
+
+/* Empty state improvements */
+.records-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #666;
+}
+
+.records-empty i {
+  font-size: 4rem;
+  color: #4CAF50;
+  margin-bottom: 1.5rem;
+}
+
+.records-empty p {
+  font-size: 1.2rem;
+  margin: 0;
 }
 
 .form-actions {
@@ -465,6 +615,26 @@
   background-color: #f8f9fa;
 }
 
+.text-success {
+  color: #28a745;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.ms-2 {
+  margin-left: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
 .mb-0 { margin-bottom: 0; }
 .mb-1 { margin-bottom: 0.5rem; }
 .mb-2 { margin-bottom: 1rem; }
@@ -487,12 +657,12 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 2rem 2rem 0 2rem; /* Add top padding for better spacing */
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 1rem;
+    padding: 1.5rem 1rem 0 1rem; /* Maintain spacing on mobile */
   }
   
   .grid {
@@ -501,6 +671,183 @@
   
   .card {
     padding: 1.5rem;
+  }
+}
+
+/* Market Component Styles */
+.crop-selection-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 15px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.crop-selection-section:hover {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.crop-selection-area {
+  text-align: center;
+}
+
+.crop-selection-section h3 {
+  color: #4CAF50;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Crop Information Grid */
+.crop-details {
+  margin-top: 2rem;
+}
+
+.crop-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.info-card {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 15px;
+  border-left: 4px solid #4CAF50;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.info-card h5 {
+  color: #4CAF50;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-card h5 i {
+  font-size: 1.2rem;
+}
+
+.info-card p {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.info-card p strong {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.visualization-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e9ecef;
+}
+
+.crop-selection,
+.chart-type-selection {
+  margin-bottom: 1.5rem;
+}
+
+.chart-type-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data-table {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.data-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.data-table tr:hover {
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Chart.js responsive adjustments */
+.chart-container canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Mobile responsiveness for market component */
+@media (max-width: 768px) {
+  .chart-type-buttons {
+    flex-direction: column;
+  }
+  
+  .chart-type-buttons .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .chart-container {
+    min-height: 300px;
+    padding: 1rem;
+  }
+  
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .file-item button {
+    align-self: flex-end;
   }
 }
 

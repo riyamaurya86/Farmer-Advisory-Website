@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Chat from './components/Chat';
 import Weather from './components/Weather';
+import Market from './components/Market';
 import Records from './components/Records';
 import Settings from './components/Settings';
 import LoadingOverlay from './components/LoadingOverlay';
@@ -166,6 +167,8 @@ function App() {
         return <Chat config={config} setIsLoading={setIsLoading} />;
       case 'weather':
         return <Weather config={config} />;
+      case 'market':
+        return <Market />;
       case 'records':
         return <Records />;
       case 'settings':

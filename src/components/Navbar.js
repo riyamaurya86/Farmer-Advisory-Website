@@ -9,6 +9,7 @@ const Navbar = ({ activeTab, onTabChange }) => {
     { id: 'home', icon: 'fas fa-home', label: translate('home') },
     { id: 'chat', icon: 'fas fa-comments', label: translate('chat') },
     { id: 'weather', icon: 'fas fa-cloud-sun', label: translate('weather') },
+    { id: 'market', icon: 'fas fa-chart-line', label: translate('market') },
     { id: 'records', icon: 'fas fa-clipboard-list', label: translate('records') },
     { id: 'settings', icon: 'fas fa-cog', label: translate('settings') }
   ];
@@ -29,7 +30,7 @@ const Navbar = ({ activeTab, onTabChange }) => {
         {translate('appTitle')}
       </div>
 
-      <button 
+      <button
         className="mobile-menu-toggle"
         onClick={toggleMobileMenu}
         aria-label="Toggle mobile menu"

@@ -123,7 +123,7 @@ const Records = () => {
       case 'local':
         return <i className="fas fa-hdd text-warning" title="Using local storage"></i>;
       case 'error':
-        return <i className="fas fa-exclamation-triangle text-danger" title="Database error"></i>;
+        return <i className="fas text-danger" title="Database error"></i>;
       default:
         return <i className="fas fa-spinner fa-spin text-muted" title="Connecting..."></i>;
     }
@@ -133,15 +133,17 @@ const Records = () => {
     <div className="container">
       <div className="card">
         <div className="card-header">
-          <div className="d-flex justify-content-between align-items-center">
-            <h2>
-              <i className="fas fa-clipboard-list"></i>
-              {translate('farmingRecords')}
-              <span className="ms-2">{getDbStatusIcon()}</span>
-            </h2>
+          <div className="records-header">
+            <div className="records-title">
+              <h2>
+                <i className="fas fa-clipboard-list"></i>
+                {translate('farmingRecords')}
+              </h2>
+              <span className="db-status-icon">{getDbStatusIcon()}</span>
+            </div>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="btn btn-primary"
+              className="btn btn-primary add-record-btn"
               disabled={isLoading}
             >
               <i className="fas fa-plus"></i>
@@ -151,7 +153,7 @@ const Records = () => {
         </div>
 
         {showForm && (
-          <div className="p-4 bg-light">
+          <div className="records-form">
             <form onSubmit={handleSubmit}>
               <div className="grid grid-2">
                 <div className="form-group">
@@ -234,13 +236,13 @@ const Records = () => {
 
         <div className="p-4">
           {isLoading && records.length === 0 ? (
-            <div className="text-center p-4">
-              <i className="fas fa-spinner fa-spin fa-3x mb-3"></i>
+            <div className="records-empty">
+              <i className="fas fa-spinner fa-spin"></i>
               <p>Loading records...</p>
             </div>
           ) : records.length === 0 ? (
-            <div className="text-center text-muted p-4">
-              <i className="fas fa-seedling fa-3x mb-3"></i>
+            <div className="records-empty">
+              <i className="fas fa-seedling"></i>
               <p>No farming records yet. Add your first record to get started!</p>
             </div>
           ) : (
