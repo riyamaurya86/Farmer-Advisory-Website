@@ -8,6 +8,7 @@ require('dotenv').config();
 const recordsRoutes = require('./routes/records');
 const chatRoutes = require('./routes/chat');
 const weatherRoutes = require('./routes/weather');
+const enhancedChatRoutes = require('./routes/enhanced-chat');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -54,6 +55,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/records', recordsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/enhanced-chat', enhancedChatRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

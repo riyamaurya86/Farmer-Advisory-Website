@@ -48,7 +48,7 @@ router.get('/', ensureDatabaseConnection, async (req, res) => {
 // POST /api/records - Create a new farming record
 router.post('/', ensureDatabaseConnection, async (req, res) => {
     try {
-        const { cropName, plantingDate, expectedHarvest, notes } = req.body;
+        const { cropName, plantingDate, expectedHarvest, notes, soilType } = req.body;
 
         // Validation
         if (!cropName || !plantingDate) {
@@ -64,6 +64,7 @@ router.post('/', ensureDatabaseConnection, async (req, res) => {
             plantingDate,
             expectedHarvest: expectedHarvest || null,
             notes: notes || '',
+            soilType: soilType || 'Not specified',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
@@ -91,7 +92,7 @@ router.post('/', ensureDatabaseConnection, async (req, res) => {
 router.put('/:id', ensureDatabaseConnection, async (req, res) => {
     try {
         const { id } = req.params;
-        const { cropName, plantingDate, expectedHarvest, notes } = req.body;
+        const { cropName, plantingDate, expectedHarvest, notes, soilType } = req.body;
 
         // Validation
         if (!ObjectId.isValid(id)) {
@@ -114,6 +115,7 @@ router.put('/:id', ensureDatabaseConnection, async (req, res) => {
             plantingDate,
             expectedHarvest: expectedHarvest || null,
             notes: notes || '',
+            soilType: soilType || 'Not specified',
             updatedAt: new Date().toISOString()
         };
 

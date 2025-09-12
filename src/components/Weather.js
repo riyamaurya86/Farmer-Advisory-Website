@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { weatherAPI } from '../services/apiService';
+import './Weather.css';
 
-const Weather = ({ config }) => {
+const Weather = ({ config, onLocationChange }) => {
   const { translate } = useLanguage();
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [manualLocation, setManualLocation] = useState('');
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   useEffect(() => {
     fetchWeatherData();
-  }, [config]);
+  }, [config]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchWeatherData = async () => {
     if (!config.location.lat || !config.location.lon) {
-      setError('Location not available. Please enable location access.');
+      setError('Location not available. Please enable location access or enter location manually.');
       setLoading(false);
       return;
     }
@@ -29,6 +33,98 @@ const Weather = ({ config }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchWeatherByCity = async (cityName) => {
+    if (!cityName.trim()) {
+      setLocationError('Please enter a city name');
+      return;
+    }
+
+    setLoading(true);
+    setLocationError(null);
+
+    try {
+      console.log('Fetching weather for city:', cityName.trim());
+      const response = await weatherAPI.getByCity(cityName.trim());
+      console.log('Weather API response:', response);
+
+      setWeatherData(response.data);
+      setError(null);
+      setShowManualInput(false);
+      setManualLocation(''); // Clear the input field
+
+      // Store the selected location and notify parent component
+      const newLocation = {
+        city: response.data.city,
+        country: response.data.country,
+        lat: null, // We don't have coordinates for city-based search
+        lon: null,
+        isManual: true,
+        manualCity: cityName.trim()
+      };
+      if (onLocationChange) {
+        onLocationChange(newLocation);
+      }
+    } catch (err) {
+      console.error('Weather API error:', err);
+      setLocationError(err.response?.data?.message || 'City not found. Please check the spelling and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setLoading(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          const response = await weatherAPI.getCurrent(lat, lon);
+          setWeatherData(response.data);
+          setError(null);
+          setShowManualInput(false);
+
+          // Store the current location and notify parent component
+          const newLocation = {
+            city: response.data.city,
+            country: response.data.country,
+            lat: lat,
+            lon: lon,
+            isManual: false,
+            manualCity: null
+          };
+          if (onLocationChange) {
+            onLocationChange(newLocation);
+          }
+        } catch (err) {
+          console.error('Weather API error:', err);
+          setLocationError('Failed to fetch weather data for current location.');
+        } finally {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setLocationError('Unable to get your current location. Please enter a city name manually.');
+        setLoading(false);
+      }
+    );
+  };
+
+  const handleManualLocationSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted with city:', manualLocation);
+    fetchWeatherByCity(manualLocation);
   };
 
   if (loading) {
@@ -65,13 +161,73 @@ const Weather = ({ config }) => {
             <p className="mt-2 text-muted">
               {error || 'Weather data unavailable. Please check backend configuration.'}
             </p>
-            <button
-              onClick={fetchWeatherData}
-              className="btn btn-primary mt-2"
-            >
-              <i className="fas fa-refresh"></i>
-              Retry
-            </button>
+
+            {!showManualInput ? (
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowManualInput(true)}
+                  className="btn btn-primary me-2"
+                >
+                  <i className="fas fa-map-marker-alt"></i>
+                  Enter Location Manually
+                </button>
+                <button
+                  onClick={fetchWeatherData}
+                  className="btn btn-secondary"
+                >
+                  <i className="fas fa-refresh"></i>
+                  Retry GPS
+                </button>
+              </div>
+            ) : (
+              <div className="mt-3">
+                <form onSubmit={handleManualLocationSubmit} className="manual-location-form">
+                  <div className="form-group">
+                    <label className="form-label">Enter City Name:</label>
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        value={manualLocation}
+                        onChange={(e) => setManualLocation(e.target.value)}
+                        placeholder="e.g., Mumbai, Delhi, Bangalore"
+                        className="form-input"
+                        required
+                      />
+                      <button type="submit" className="btn btn-primary">
+                        <i className="fas fa-search"></i>
+                        Get Weather
+                      </button>
+                    </div>
+                    {locationError && (
+                      <div className="text-danger mt-1">
+                        <small>{locationError}</small>
+                      </div>
+                    )}
+                  </div>
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      onClick={getCurrentLocation}
+                      className="btn btn-success"
+                    >
+                      <i className="fas fa-map-marker-alt"></i>
+                      Use Current Location
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowManualInput(false);
+                        setLocationError(null);
+                        setManualLocation('');
+                      }}
+                      className="btn btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -82,14 +238,77 @@ const Weather = ({ config }) => {
     <div className="container">
       <div className="card">
         <div className="card-header">
-          <h2>
-            <i className="fas fa-cloud-sun"></i>
-            {translate('currentWeather')}
-          </h2>
+          <div className="weather-header">
+            <h2>
+              <i className="fas fa-cloud-sun"></i>
+              {translate('currentWeather')}
+            </h2>
+            <button
+              onClick={() => setShowManualInput(true)}
+              className="btn btn-outline-primary btn-sm"
+              title="Change Location"
+            >
+              <i className="fas fa-map-marker-alt"></i>
+              Change Location
+            </button>
+          </div>
         </div>
 
         {weatherData && (
           <div className="p-4">
+            {showManualInput && (
+              <div className="manual-location-overlay">
+                <div className="manual-location-form">
+                  <h4><i className="fas fa-map-marker-alt"></i> Change Location</h4>
+                  <form onSubmit={handleManualLocationSubmit}>
+                    <div className="form-group">
+                      <label className="form-label">Enter City Name:</label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          value={manualLocation}
+                          onChange={(e) => setManualLocation(e.target.value)}
+                          placeholder="e.g., Mumbai, Delhi, Bangalore"
+                          className="form-input"
+                          required
+                        />
+                        <button type="submit" className="btn btn-primary">
+                          <i className="fas fa-search"></i>
+                          Get Weather
+                        </button>
+                      </div>
+                      {locationError && (
+                        <div className="text-danger mt-1">
+                          <small>{locationError}</small>
+                        </div>
+                      )}
+                    </div>
+                    <div className="form-actions">
+                      <button
+                        type="button"
+                        onClick={getCurrentLocation}
+                        className="btn btn-success"
+                      >
+                        <i className="fas fa-map-marker-alt"></i>
+                        Use Current Location
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowManualInput(false);
+                          setLocationError(null);
+                          setManualLocation('');
+                        }}
+                        className="btn btn-secondary"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-2">
               <div className="weather-main">
                 <h3 className="text-center mb-3">{weatherData.city}</h3>

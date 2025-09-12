@@ -35,10 +35,10 @@ const Home = ({ onTabChange }) => {
     video.addEventListener('canplaythrough', handleCanPlayThrough);
 
     // Optimize video quality based on device capabilities
-    const isLowEndDevice = navigator.hardwareConcurrency < 4 || 
-                         navigator.connection?.effectiveType === 'slow-2g' ||
-                         navigator.connection?.effectiveType === '2g';
-    
+    const isLowEndDevice = navigator.hardwareConcurrency < 4 ||
+      navigator.connection?.effectiveType === 'slow-2g' ||
+      navigator.connection?.effectiveType === '2g';
+
     if (isLowEndDevice) {
       video.style.filter = 'blur(1px)';
     }
@@ -147,13 +147,13 @@ const Home = ({ onTabChange }) => {
             <source src="/Video Banner Stock Videos - Rural, Farming, Agriculture, Nature.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          
+
           {showPlayButton && (
             <button className="video-play-btn" onClick={handlePlayVideo}>
               <i className="fas fa-play"></i>
             </button>
           )}
-          
+
           <div className="video-overlay"></div>
         </div>
 
@@ -162,16 +162,16 @@ const Home = ({ onTabChange }) => {
             <h1 className="hero-title">{translate('heroTitle')}</h1>
             <p className="hero-subtitle">{translate('heroSubtitle')}</p>
             <p className="hero-description">{translate('heroDescription')}</p>
-            
+
             <div className="hero-buttons">
-              <button 
+              <button
                 className="btn btn-primary btn-large"
                 onClick={() => onTabChange('chat')}
               >
                 <i className="fas fa-rocket"></i>
                 {translate('getStarted')}
               </button>
-              <button 
+              <button
                 className="btn btn-secondary btn-large"
                 onClick={() => onTabChange('weather')}
               >
@@ -206,7 +206,7 @@ const Home = ({ onTabChange }) => {
           <div className="cta-content">
             <h2>Ready to Transform Your Farming?</h2>
             <p>Join thousands of farmers who are already using AI-powered agricultural advice</p>
-            <button 
+            <button
               className="btn btn-primary btn-large pulse"
               onClick={() => onTabChange('chat')}
             >

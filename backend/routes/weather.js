@@ -3,6 +3,15 @@ const axios = require('axios');
 
 const router = express.Router();
 
+// Test route to verify router is working
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Weather router is working',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Middleware to validate Weather API key
 const validateWeatherKey = (req, res, next) => {
     if (!process.env.WEATHER_API_KEY) {
@@ -13,6 +22,114 @@ const validateWeatherKey = (req, res, next) => {
     }
     next();
 };
+
+// GET /api/weather/test-city - Test city weather endpoint
+router.get('/test-city', validateWeatherKey, async (req, res) => {
+    try {
+        const testCity = 'Mumbai';
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(testCity)}&appid=${process.env.WEATHER_API_KEY}&units=metric`;
+
+        console.log('Testing city weather API with:', testCity);
+        console.log('API URL:', apiUrl.replace(process.env.WEATHER_API_KEY, 'API_KEY_HIDDEN'));
+
+        const response = await axios.get(apiUrl);
+
+        res.json({
+            success: true,
+            testCity: testCity,
+            apiKeyConfigured: !!process.env.WEATHER_API_KEY,
+            responseStatus: response.status,
+            cityName: response.data.name,
+            temperature: response.data.main.temp
+        });
+    } catch (error) {
+        console.error('Test city weather error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            apiKeyConfigured: !!process.env.WEATHER_API_KEY,
+            details: error.response?.data
+        });
+    }
+});
+
+// GET /api/weather/city - Get current weather by city name
+router.get('/city', validateWeatherKey, async (req, res) => {
+    try {
+        const { city } = req.query;
+
+        console.log('Weather city request received:', city);
+
+        if (!city) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                message: 'City name is required'
+            });
+        }
+
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${process.env.WEATHER_API_KEY}&units=metric`;
+        console.log('Calling OpenWeatherMap API:', apiUrl.replace(process.env.WEATHER_API_KEY, 'API_KEY_HIDDEN'));
+
+        const response = await axios.get(apiUrl);
+
+        console.log('OpenWeatherMap API response status:', response.status);
+        console.log('OpenWeatherMap API response data:', response.data);
+
+        const weatherData = {
+            temperature: response.data.main.temp,
+            feels_like: response.data.main.feels_like,
+            humidity: response.data.main.humidity,
+            pressure: response.data.main.pressure,
+            description: response.data.weather[0].description,
+            icon: response.data.weather[0].icon,
+            wind_speed: response.data.wind.speed,
+            wind_direction: response.data.wind.deg,
+            visibility: response.data.visibility,
+            city: response.data.name,
+            country: response.data.sys.country,
+            timestamp: new Date().toISOString()
+        };
+
+        console.log('Processed weather data:', weatherData);
+
+        res.json({
+            success: true,
+            data: weatherData
+        });
+
+    } catch (error) {
+        console.error('Weather API Error:', error);
+        console.error('Error details:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            message: error.message
+        });
+
+        if (error.response) {
+            const status = error.response.status;
+            const message = error.response.data?.message || 'Weather API request failed';
+
+            if (status === 404) {
+                res.status(404).json({
+                    error: 'City not found',
+                    message: 'The city name you entered was not found. Please check the spelling and try again.'
+                });
+            } else {
+                res.status(status).json({
+                    error: 'Weather API error',
+                    message: message,
+                    status: status
+                });
+            }
+        } else {
+            res.status(500).json({
+                error: 'Internal server error',
+                message: 'Failed to fetch weather data'
+            });
+        }
+    }
+});
 
 // GET /api/weather/current - Get current weather by coordinates
 router.get('/current', validateWeatherKey, async (req, res) => {

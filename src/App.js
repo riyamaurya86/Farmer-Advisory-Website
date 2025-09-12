@@ -20,6 +20,9 @@ function App() {
     location: { lat: null, lon: null, city: '' }
   });
 
+  // Selected location for chatbot (can be different from GPS location)
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
   const loadApiKeys = useCallback(() => {
     const storedKeys = localStorage.getItem('apiKeys');
     if (storedKeys) {
@@ -85,6 +88,11 @@ function App() {
     const currentKeys = JSON.parse(localStorage.getItem('apiKeys') || '{}');
     const updatedKeys = { ...currentKeys, ...keys };
     localStorage.setItem('apiKeys', JSON.stringify(updatedKeys));
+  };
+
+  const handleLocationChange = (newLocation) => {
+    setSelectedLocation(newLocation);
+    console.log('Location changed to:', newLocation);
   };
 
   // Global functions for API key management (accessible from console)
@@ -164,9 +172,9 @@ function App() {
       case 'home':
         return <Home onTabChange={setActiveTab} />;
       case 'chat':
-        return <Chat config={config} setIsLoading={setIsLoading} />;
+        return <Chat config={config} selectedLocation={selectedLocation} setIsLoading={setIsLoading} />;
       case 'weather':
-        return <Weather config={config} />;
+        return <Weather config={config} onLocationChange={handleLocationChange} />;
       case 'market':
         return <Market />;
       case 'records':

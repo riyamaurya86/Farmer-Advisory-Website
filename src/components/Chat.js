@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { chatAPI } from '../services/apiService';
+import { chatAPI, enhancedChatAPI } from '../services/apiService';
+import MarkdownRenderer from './MarkdownRenderer';
 import './Chat.css';
 
-const Chat = ({ config, setIsLoading }) => {
+const Chat = ({ config, selectedLocation, setIsLoading }) => {
   const { translate, currentLanguage } = useLanguage();
   const [messages, setMessages] = useState([
     {
@@ -95,13 +96,28 @@ Provide practical, actionable advice for farmers. Include specific recommendatio
 
   const callGeminiAPI = async (query, context = {}) => {
     try {
-      const response = await chatAPI.sendMessage(query, currentLanguage);
+      // Use selected location if available, otherwise fall back to GPS location
+      const locationToUse = selectedLocation || config.location;
+
+      // Try enhanced chat first
+      const response = await enhancedChatAPI.sendMessage(
+        query,
+        currentLanguage,
+        locationToUse
+      );
       return response.data.message;
     } catch (error) {
-      console.error('Backend API error:', error);
+      console.error('Enhanced Chat API error:', error);
 
-      if (error.response?.status === 500 && error.response?.data?.message?.includes('API key')) {
-        return `⚠️ Backend Configuration Required: Please configure your Gemini API key in the backend environment variables to get AI-powered responses. 
+      // Fallback to regular chat
+      try {
+        const response = await chatAPI.sendMessage(query, currentLanguage);
+        return response.data.message;
+      } catch (fallbackError) {
+        console.error('Backend API error:', fallbackError);
+
+        if (fallbackError.response?.status === 500 && fallbackError.response?.data?.message?.includes('API key')) {
+          return `⚠️ Backend Configuration Required: Please configure your Gemini API key in the backend environment variables to get AI-powered responses. 
 
 For now, here's some general farming advice:
 - Monitor soil moisture regularly
@@ -109,9 +125,10 @@ For now, here's some general farming advice:
 - Use organic fertilizers when possible
 - Check weather forecasts before major farming activities
 - Maintain proper spacing between plants`;
-      }
+        }
 
-      return `I apologize, but I'm having trouble connecting to the AI service right now. Please check your internet connection and try again. In the meantime, consider consulting local agricultural experts or extension services.`;
+        return `I apologize, but I'm having trouble connecting to the AI service right now. Please check your internet connection and try again. In the meantime, consider consulting local agricultural experts or extension services.`;
+      }
     }
   };
 
@@ -132,9 +149,10 @@ For now, here's some general farming advice:
         mimeType: imageFile.type
       };
 
-      const response = await chatAPI.sendMessage(
+      const response = await enhancedChatAPI.sendMessage(
         `Analyze this agricultural image. Identify any crops, diseases, pests, or farming conditions visible. Provide specific recommendations for improvement, treatment, or best practices.`,
         currentLanguage,
+        selectedLocation || config.location,
         imageData
       );
 
@@ -238,7 +256,11 @@ For now, here's some general farming advice:
                   {message.imageUrl && (
                     <img src={message.imageUrl} alt="Uploaded" className="message-image" />
                   )}
-                  <p>{message.content}</p>
+                  {message.type === 'bot' ? (
+                    <MarkdownRenderer content={message.content} />
+                  ) : (
+                    <p>{message.content}</p>
+                  )}
                   <span className="message-time">{formatTimestamp(message.timestamp)}</span>
                 </div>
               </div>

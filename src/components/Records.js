@@ -12,12 +12,13 @@ const Records = () => {
     cropName: '',
     plantingDate: '',
     expectedHarvest: '',
-    notes: ''
+    notes: '',
+    soilType: ''
   });
 
   useEffect(() => {
     initializeDatabase();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initializeDatabase = async () => {
     setIsLoading(true);
@@ -83,7 +84,8 @@ const Records = () => {
         cropName: '',
         plantingDate: '',
         expectedHarvest: '',
-        notes: ''
+        notes: '',
+        soilType: ''
       });
       setShowForm(false);
     } catch (error) {
@@ -190,6 +192,29 @@ const Records = () => {
                     className="form-input"
                   />
                 </div>
+
+                <div className="form-group">
+                  <label className="form-label">Soil Type</label>
+                  <select
+                    name="soilType"
+                    value={formData.soilType}
+                    onChange={handleInputChange}
+                    className="form-input"
+                  >
+                    <option value="">Select Soil Type</option>
+                    <option value="Clay">Clay</option>
+                    <option value="Sandy">Sandy</option>
+                    <option value="Loamy">Loamy</option>
+                    <option value="Silty">Silty</option>
+                    <option value="Peaty">Peaty</option>
+                    <option value="Chalky">Chalky</option>
+                    <option value="Red Soil">Red Soil</option>
+                    <option value="Black Soil">Black Soil</option>
+                    <option value="Alluvial">Alluvial</option>
+                    <option value="Laterite">Laterite</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-group">
@@ -271,6 +296,13 @@ const Records = () => {
                       <div className="record-item">
                         <i className="fas fa-calendar-check"></i>
                         <span>Expected Harvest: {formatDate(record.expectedHarvest)}</span>
+                      </div>
+                    )}
+
+                    {record.soilType && (
+                      <div className="record-item">
+                        <i className="fas fa-seedling"></i>
+                        <span>Soil Type: {record.soilType}</span>
                       </div>
                     )}
 

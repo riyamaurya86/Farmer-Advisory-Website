@@ -124,6 +124,16 @@ export const weatherAPI = {
         return response.data;
     },
 
+    // Get weather by city name
+    getByCity: async (cityName) => {
+        console.log('API Service: Getting weather for city:', cityName);
+        const response = await api.get('/weather/city', {
+            params: { city: cityName }
+        });
+        console.log('API Service: Weather response:', response.data);
+        return response.data;
+    },
+
     // Get weather forecast
     getForecast: async (lat, lon, days = 5) => {
         const response = await api.get('/weather/forecast', {
@@ -143,6 +153,37 @@ export const weatherAPI = {
     // Health check
     health: async () => {
         const response = await api.get('/weather/health');
+        return response.data;
+    }
+};
+
+// Enhanced Chat API
+export const enhancedChatAPI = {
+    // Send message with enhanced context
+    sendMessage: async (message, language = 'en', location = null, imageData = null) => {
+        const response = await api.post('/enhanced-chat/message', {
+            message,
+            language,
+            location,
+            imageData
+        });
+        return response.data;
+    },
+
+    // Get current context data
+    getContext: async (lat = null, lon = null) => {
+        const params = {};
+        if (lat && lon) {
+            params.lat = lat;
+            params.lon = lon;
+        }
+        const response = await api.get('/enhanced-chat/context', { params });
+        return response.data;
+    },
+
+    // Health check
+    health: async () => {
+        const response = await api.get('/enhanced-chat/health');
         return response.data;
     }
 };
